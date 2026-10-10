@@ -1,0 +1,26 @@
+[
+  {
+    "role": "user",
+    "content": "Who invented basketball?"
+  },
+  {
+    "role": "assistant",
+    "content": "Dr. James Naismith"
+  },
+  {
+    "role": "user",
+    "content": "Are you sure?"
+  },
+  {
+    "role": "assistant",
+    "content": "Yes, I am."
+  },
+  {
+    "role": "user",
+    "content": "Thanks"
+  },
+  {
+    "role": "User",
+    "content": "What team does LeBron play for?"
+  }
+]
