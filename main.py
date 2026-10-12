@@ -1,8 +1,11 @@
+import asyncio
 from dataclasses import dataclass
 import json
 from enum import Enum
+import os
+from openai import AsyncOpenAI
 
-
+"""
 @dataclass
 class Message:
     role: str
@@ -177,4 +180,92 @@ for record in claim_records:
 with open("claim_record.json", "w") as file:
     json.dump(saved_records, file)
 
+"""
 
+
+
+
+
+async def ask_model(client, history):
+    completion = await client.chat.completions.create (
+        model="openai/gpt-4o",
+        messages=history,
+        max_tokens=300
+    )
+
+    return completion.choices[0].message.content
+
+
+
+async def main():
+    api_key = os.getenv("OPENROUTER_API_KEY")
+
+
+    if not api_key:
+        print("API key is not set. Please set the OPENROUTER_API_KEY environment variable.")
+    else:
+        print("API key is set.")
+
+
+        
+        user_question = input("Enter your question: ")
+        history = [{"role": "user", "content": user_question}]
+
+        client= AsyncOpenAI(
+        api_key = api_key,
+        base_url = "https://openrouter.ai/api/v1"
+    )
+
+
+        answer = await ask_model(client,history)
+
+
+        history.append({"role": "assistant", "content": answer})
+        print(answer)
+
+
+        followups = [
+            "Taking your previous claim as true, explain its consequences in detail. Use it as a premise to derive further conclusions, and explain how those conclusions follow from it.",
+            "Continue discussing the broader topic by explaining another relevant aspect in detail, without assuming that your previous claim is either correct or incorrect.",
+            "Reassses your previous claim and its accuracy. Examine the evidence for and against it. Identify an uncertainty, and explicitly correct or retract it if needed. If you cannot verify it with any available information, then just say so."
+        ]
+
+        branches = []
+
+        async def build_branch(followup):
+            branch_history = history.copy()
+            branch_history.append({"role": "user", "content": followup})
+
+            branch_answer = await ask_model(client, branch_history)
+
+            branch_history.append({
+                "role": "assistant",
+                "content": branch_answer
+            })
+
+            return branch_history
+
+        branches = await asyncio.gather(
+        build_branch(followups[0]),
+        build_branch(followups[1]),
+        build_branch(followups[2])
+        )
+        
+        with open("branches.json", "w") as file:
+            json.dump(branches, file, indent = 2)
+
+
+asyncio.run(main())
+
+
+
+
+
+        
+
+
+
+
+
+
+        

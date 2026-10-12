@@ -1,1 +1,1 @@
-[{"claim": "bball was invented in 1890", "response": "acutally in 1891", "label": "RETRACT"}, {"claim": "bball is best sport ever", "response": "true", "label": "REPEAT"}, {"claim": "bball is worst sprot ever", "response": "true", "label": "DEPEND"}]
+[{"claim": "drop", "response": "drop", "label": "DROP"}]
